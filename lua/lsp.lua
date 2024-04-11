@@ -40,19 +40,20 @@ lspconfig.ruff_lsp.setup {
 --    },
 --  },
 --}
-local start_typst_lsp = function ()
-  vim.lsp.start({
-    name = 'typst-lsp',
-    cmd = {'typst-lsp'},
-    root_dir = vim.fs.dirname(vim.fs.find({'*.typ'}, { upward = true })[1]),
-    settings = {exportPdf = "never"},
-  })
-end
-vim.api.nvim_create_autocmd("FileType", {
-  desc = 'Auto start typst-lsp for neovim.',
-  pattern = 'typst',
-  callback = start_typst_lsp
-})
+
+--local start_typst_lsp = function ()
+--  vim.lsp.start({
+--    name = 'typst-lsp',
+--    cmd = {'typst-lsp'},
+--    --root_dir = vim.fs.dirname(vim.fs.find({'*.typ'}, { upward = true })[1]),
+--    settings = {exportPdf = "never"},
+--  })
+--end
+--vim.api.nvim_create_autocmd("FileType", {
+--  desc = 'Auto start typst-lsp for neovim.',
+--  pattern = 'typst',
+--  callback = start_typst_lsp
+--})
 
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'

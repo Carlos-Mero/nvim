@@ -17,7 +17,7 @@ require'nvim-treesitter.configs'.setup {
       "c", "cpp", "json", "json5", "markdown", "markdown_inline", "toml", "csv",
       "lua", "vim", "vimdoc", "query", "python", "yaml", "xml", "latex", "html",
       "css", "javascript", "typescript", "swift", "rust", "bibtex", "bash", "fish",
-      "make", "godot_resource", "ssh_config"},
+      "make", "godot_resource", "ssh_config", "typst"},
   sync_install = true,
   auto_install = true,
   ignore_install = {},
@@ -122,7 +122,8 @@ vim.cmd([[
   let g:loaded_netrwPlugin = 1
   set diffopt=vertical
   au FileType csv setlocal nowrap
-  set mousescroll=ver:3,hor:2
+  set mouse=a
+  set mousescroll=ver:1,hor:1
   let g:python3_host_prog = '/opt/homebrew/bin/python3'
 
   nnoremap <leader>n :NvimTreeToggle<CR>
@@ -130,8 +131,8 @@ vim.cmd([[
   nnoremap <silent>    ' <Cmd>BufferNext<CR>
   nnoremap <silent>    qf :lua vim.lsp.buf.code_action()<CR>
   nnoremap <leader>w <Cmd>TypstWatch<CR>
-  nnoremap <leader>p :MarkdownPreview<CR>
-  nnoremap <leader>s :MarkdownPreviewStop<CR>
+  nnoremap <leader>p :TypstPreview<CR>
+  nnoremap <leader>s :TypstPreviewStop<CR>
   nnoremap <leader>t :TagbarToggle<CR>
   nnoremap <leader>/ :nohl<CR>
   nnoremap <leader>x :bd<CR>
@@ -185,7 +186,7 @@ vim.cmd([[
   hi Function guifg=#bdd0f1 gui=bold
   hi Structure gui=bold
   hi Class gui=bold
-  hi Title gui=bold
+  hi Title guifg=#bdd0f1 gui=bold
   hi PMenuSel gui=bold
   hi NormalNC guibg=None
   hi Type guifg=#e2bdee
@@ -197,7 +198,7 @@ vim.cmd([[
   hi link @lsp.type.property Property
   hi link @lsp.typemod.unknown.dependentName.cpp Property
   hi @type.builtin guifg=#e2bdee
-  hi Statement guifg=#c7eca1
+  hi Statement guifg=#ffffff gui=bold
   hi @conditional guifg=#ffffff gui=bold
   hi @nospell guifg=#c7eca1
   hi @none guifg=#bdd0f1
@@ -248,5 +249,10 @@ vim.cmd([[
   hi @punctuation.special guifg=#e2bdee
   hi @namespace.cpp guifg=#90dc93 gui=bold
   hi link @constant.builtin.cpp Macro
+  hi link @keyword.conditional.cpp @conditional
+  hi link @keyword.conditional.c @conditional
   hi @string.csv guifg=#eecdef gui=bold
+  hi link @property.yaml @keyword
+  hi @constant.typst guifg=#eecdef gui=bold
+  hi @markup.math.typst guifg=#bdd0f1 gui=bold
 ]])

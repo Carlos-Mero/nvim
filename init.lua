@@ -82,7 +82,12 @@ require("lazy").setup({
     'hrsh7th/cmp-nvim-lua',
 --    'kdheepak/cmp-latex-symbols',
     {'kaarmu/typst.vim', ft='typst'},
-    {'williamboman/mason.nvim', config=function() require("mason").setup() end},
+    {
+        'chomosuke/typst-preview.nvim',
+        ft = 'typst',
+        build = function() require 'typst-preview'.update() end,
+    },
+--    {'williamboman/mason.nvim', config=function() require("mason").setup() end},
 --    {'williamboman/mason-lspconfig.nvim',
 --      config = function()require("mason-lspconfig").setup() end},
     'mfussenegger/nvim-dap',
