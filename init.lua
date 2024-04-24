@@ -1,3 +1,86 @@
+vim.cmd([[
+  syntax off
+  set hls ic
+  set number
+  set cursorline
+  set linebreak
+  set smartindent
+  set smartcase
+  set encoding=utf-8
+  set laststatus=2
+  set ts=4
+  set expandtab
+  set shiftwidth=4
+  set nofoldenable
+  set display=lastline
+  set noshowmode
+  set noshowcmd
+  set noimdisable
+  set signcolumn=no
+  set pumheight=13
+  set spr
+
+  let g:loaded_matchparen = 1
+  let g:loaded_netrw = 1
+  let g:loaded_netrwPlugin = 1
+  set diffopt=vertical
+  au FileType csv setlocal nowrap
+  set mouse=a
+  set mousescroll=ver:1,hor:1
+  let g:python3_host_prog = '/opt/homebrew/bin/python3'
+
+  nnoremap <leader>n :NvimTreeToggle<CR>
+  nnoremap <silent>    ; <Cmd>BufferPrevious<CR>
+  nnoremap <silent>    ' <Cmd>BufferNext<CR>
+  nnoremap <silent>    qf :lua vim.lsp.buf.code_action()<CR>
+  nnoremap <leader>w <Cmd>TypstWatch<CR>
+  nnoremap <leader>p :TypstPreview<CR>
+  nnoremap <leader>s :TypstPreviewStop<CR>
+  nnoremap <leader>t :TagbarToggle<CR>
+  nnoremap <leader>/ :nohl<CR>
+  nnoremap <leader>x :bd<CR>
+  nnoremap <M-x> :bd!<CR>
+  noremap <SPACE>h <C-W>h
+  noremap <C-h> <C-W>h
+  noremap <SPACE>j <C-W>j
+  noremap <C-j> <C-W>j
+  noremap <SPACE>k <C-W>k
+  noremap <C-k> <C-W>k
+  noremap <SPACE>l <C-W>l
+  noremap <C-l> <C-W>l
+  noremap <SPACE>H <C-W>H
+  noremap <SPACE>J <C-W>J
+  noremap <SPACE>K <C-W>K
+  noremap <SPACE>L <C-W>L
+  noremap <SPACE>+ 3<C-W>+
+  noremap <SPACE>- 3<C-W>-
+  noremap <SPACE>> <C-W>>
+  noremap <SPACE>< <C-W><
+  noremap <SPACE>w <C-W>_
+  tnoremap <C-x> <C-\><C-N>
+  tnoremap <ESC> <C-\><C-N>
+  noremap <SPACE><Down> <C-W><Down>
+  noremap <SPACE><Up> <C-W><Up>
+  noremap <SPACE><Left> <C-W><Left>
+  noremap <SPACE><Right> <C-W><Right>
+  noremap J <C-D>
+  noremap K <C-U>
+  noremap H g0
+  noremap L g$
+  noremap D <C-D>
+  noremap U <C-U>
+  inoremap <M-j> <Down>
+  inoremap <M-k> <Up>
+  inoremap <M-h> <Left>
+  inoremap <M-l> <Right>
+  inoremap <M-Left> <C-O>0
+  inoremap <M-Right> <C-O>$
+  inoremap <M-Up> <C-O>gg
+  inoremap <M-Down> <C-O>G
+  noremap <c-n> :%!xxd<CR>
+
+]])
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -47,9 +130,9 @@ require("lazy").setup({
                 sections = {
                     lualine_a = {'mode'},
                     lualine_b = {'branch', 'diff', 'diagnostics'},
-                    lualine_c = {'filename', 'filesize'},
-                    lualine_x = {'encoding', 'selectioncount', 'filetype'},
-                    lualine_y = {'progress'},
+                    lualine_c = {'filename', 'aerial'},
+                    lualine_x = {'encoding', 'filetype', 'selectioncount'},
+                    lualine_y = {'progress', 'filesize'},
                     lualine_z = {'location'}
                 },
                 inactive_sections = {
@@ -93,6 +176,22 @@ require("lazy").setup({
     'mfussenegger/nvim-dap',
     'neovim/nvim-lspconfig',
     {'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
+    {
+        'stevearc/aerial.nvim',
+        on_attach = function(bufnr)
+            -- Jump forwards/backwards with '{' and '}'
+            vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+            vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+        end,
+        opts = {
+            backends = {'treesitter'},
+            autojump = true
+        },
+        dependencies = {
+            "nvim-treesitter/nvim-treesitter",
+            "nvim-tree/nvim-web-devicons"
+        },
+    }
 })
 
 require('config')
