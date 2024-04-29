@@ -45,8 +45,9 @@ require'nvim-treesitter.configs'.setup {
   },
   indent = {
     enable = true
-  }
+  },
 }
+
 vim.api.nvim_set_keymap("n", "t", ":term<CR>", {noremap = true, silent = true})
 local term_mode = vim.api.nvim_create_augroup("TERM_MODE", {clear = true})
 vim.api.nvim_create_autocmd({"TermOpen"}, {
@@ -98,6 +99,83 @@ require('nvim-tree').setup({
 })
 
 vim.cmd([[
+  set hls ic
+  set number
+  set cursorline
+  set linebreak
+  set smartindent
+  set smartcase
+  set encoding=utf-8
+  set laststatus=2
+  set ts=4
+  set expandtab
+  set shiftwidth=4
+  set nofoldenable
+  set display=lastline
+  set noshowmode
+  set noshowcmd
+  set noimdisable
+  set signcolumn=no
+  set pumheight=13
+  set spr
+
+  let g:loaded_matchparen = 1
+  set diffopt=vertical
+  au FileType csv setlocal nowrap
+  set mouse=a
+  set mousescroll=ver:1,hor:1
+  let g:python3_host_prog = '/opt/homebrew/bin/python3'
+
+  nnoremap <leader>n :NvimTreeToggle<CR>
+  nnoremap <silent>    ; <Cmd>BufferPrevious<CR>
+  nnoremap <silent>    ' <Cmd>BufferNext<CR>
+  nnoremap <silent>    qf :lua vim.lsp.buf.code_action()<CR>
+  nnoremap <leader>w <Cmd>TypstWatch<CR>
+  nnoremap <leader>p :TypstPreview<CR>
+  nnoremap <leader>s :TypstPreviewStop<CR>
+  nnoremap <leader>t :TagbarToggle<CR>
+  nnoremap <leader>/ :nohl<CR>
+  nnoremap <leader>x :bd<CR>
+  nnoremap <M-x> :bd!<CR>
+  noremap <SPACE>h <C-W>h
+  noremap <C-h> <C-W>h
+  noremap <SPACE>j <C-W>j
+  noremap <C-j> <C-W>j
+  noremap <SPACE>k <C-W>k
+  noremap <C-k> <C-W>k
+  noremap <SPACE>l <C-W>l
+  noremap <C-l> <C-W>l
+  noremap <SPACE>H <C-W>H
+  noremap <SPACE>J <C-W>J
+  noremap <SPACE>K <C-W>K
+  noremap <SPACE>L <C-W>L
+  noremap <SPACE>+ 3<C-W>+
+  noremap <SPACE>- 3<C-W>-
+  noremap <SPACE>> <C-W>>
+  noremap <SPACE>< <C-W><
+  noremap <SPACE>w <C-W>_
+  tnoremap <C-x> <C-\><C-N>
+  tnoremap <ESC> <C-\><C-N>
+  noremap <SPACE><Down> <C-W><Down>
+  noremap <SPACE><Up> <C-W><Up>
+  noremap <SPACE><Left> <C-W><Left>
+  noremap <SPACE><Right> <C-W><Right>
+  noremap J <C-D>
+  noremap K <C-U>
+  noremap H g0
+  noremap L g$
+  noremap D <C-D>
+  noremap U <C-U>
+  inoremap <M-j> <Down>
+  inoremap <M-k> <Up>
+  inoremap <M-h> <Left>
+  inoremap <M-l> <Right>
+  inoremap <M-Left> <C-O>0
+  inoremap <M-Right> <C-O>$
+  inoremap <M-Up> <C-O>gg
+  inoremap <M-Down> <C-O>G
+  noremap <c-n> :%!xxd<CR>
+
   colorscheme tokyonight-moon
 
   hi dbknum guifg=#f9f9f9 guibg=#ec6645 gui=bold
@@ -180,4 +258,6 @@ vim.cmd([[
   hi @markup.raw.typst guifg=NONE
   hi @markup.raw.block.typst guifg=NONE
   hi @variable guifg=NONE
+  hi AerialLine guifg=#c7eca1 gui=bold
+  hi link @constant.builtin.c Macro
 ]])

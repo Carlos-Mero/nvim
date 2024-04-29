@@ -14,12 +14,19 @@ lspconfig.clangd.setup {
 lspconfig.rust_analyzer.setup {
   capabilities = capabilities,
 }
-lspconfig.jedi_language_server.setup {
+--lspconfig.ruff_lsp.setup {
+--  capabilities = capabilities,
+--}
+--lspconfig.pyright.setup {
+--  capabilities = capabilities,
+--}
+lspconfig.pylsp.setup {
   capabilities = capabilities,
 }
-lspconfig.ruff_lsp.setup {
-  capabilities = capabilities,
-}
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = "*.txt",
+  command = "syntax off"
+})
 
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'
