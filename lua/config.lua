@@ -1,16 +1,15 @@
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-vim.lsp.set_log_level("off")
-
 local builtin = require('telescope.builtin')
+vim.keymap.set('n', 'tf', builtin.find_files, {})
+vim.keymap.set('n', 'tg', builtin.live_grep, {})
+vim.keymap.set('n', 'tb', builtin.buffers, {})
+vim.keymap.set('n', 'th', builtin.help_tags, {})
 vim.keymap.set('n', 'j', 'gj')
 vim.keymap.set('v', 'j', 'gj')
 vim.keymap.set('n', 'k', 'gk')
 vim.keymap.set('v', 'k', 'gk')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+vim.keymap.set('n', 'z', '<cmd>bd|bp<CR>')
+vim.keymap.set('n', 'q', '<cmd>q<CR>', {noremap = true, silent = true})
+vim.keymap.set({'i', 'c', 't'}, 'vv', '<ESC>', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', {buffer = bufnr})
 
 require'nvim-treesitter.configs'.setup {
@@ -48,7 +47,7 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 
-vim.api.nvim_set_keymap("n", "t", ":term<CR>", {noremap = true, silent = true})
+vim.api.nvim_set_keymap("n", "<leader>t", ":term<CR>", {noremap = true, silent = true})
 local term_mode = vim.api.nvim_create_augroup("TERM_MODE", {clear = true})
 vim.api.nvim_create_autocmd({"TermOpen"}, {
     pattern = "*",
@@ -70,16 +69,16 @@ local function nvim_tree_keymap(bufnr)
 
   vim.keymap.set('n', '?',     api.tree.toggle_help,                  opts('Help'))
   vim.keymap.set('n', 'o',       api.node.open.edit,                  opts('Open'))
-  vim.keymap.set('n', '<TAB>',       api.node.open.edit,                  opts('Open'))
-  vim.keymap.set('n', '<CR>',   api.tree.change_root_to_node,        opts('CD'))
+  vim.keymap.set('n', '<TAB>',       api.node.open.edit,              opts('Open'))
+  vim.keymap.set('n', '<CR>',   api.tree.change_root_to_node,         opts('CD'))
   vim.keymap.set('n', '>',       api.node.navigate.sibling.next,      opts('Next Sibling'))
   vim.keymap.set('n', '<',       api.node.navigate.sibling.prev,      opts('Previous Sibling'))
   vim.keymap.set('n', '.',       api.node.run.cmd,                    opts('Run Command'))
   vim.keymap.set('n', '-',       api.tree.change_root_to_parent,      opts('Up'))
-  vim.keymap.set('n', 'a',       api.fs.create,                       opts('Create'))
-  vim.keymap.set('n', 'd',       api.fs.remove,                       opts('Delete'))
-  vim.keymap.set('n', 'D',       api.fs.trash,                        opts('Trash'))
-  vim.keymap.set('n', 'e',       api.fs.rename_basename,              opts('Rename: Basename'))
+  vim.keymap.set('n', 'n',       api.fs.create,                       opts('Create'))
+  vim.keymap.set('n', 'D',       api.fs.remove,                       opts('Delete'))
+  vim.keymap.set('n', 'd',       api.fs.trash,                        opts('Trash'))
+  vim.keymap.set('n', 'r',       api.fs.rename_basename,              opts('Rename: Basename'))
   vim.keymap.set('n', 's',       api.node.run.system,                 opts('Run System'))
   vim.keymap.set('n', 'S',       api.tree.search_node,                opts('Search'))
   vim.keymap.set('n', 'u',       api.fs.rename_full,                  opts('Rename: Full Path'))
@@ -90,13 +89,27 @@ local function nvim_tree_keymap(bufnr)
   vim.keymap.set('n', 'Y',       api.fs.copy.relative_path,           opts('Copy Relative Path'))
   vim.keymap.set('n', '<2-LeftMouse>',  api.node.open.edit,           opts('Open'))
   vim.keymap.set('n', '<2-RightMouse>', api.tree.change_root_to_node, opts('CD'))
-  vim.keymap.set('n', 'q',       api.tree.close,                      opts('Close'))
+  vim.keymap.set('n', 'z',       api.tree.close,                      opts('Close'))
 end
 
 require('nvim-tree').setup({
     on_attach = nvim_tree_keymap,
     view = {width = 24}
 })
+require('telescope').setup{
+    defaults = {
+        mappings = {
+            n = {
+                ["q"] = "close",
+                ["o"] = "select_default",
+                ["J"] = "preview_scrolling_down",
+                ["K"] = "preview_scrolling_up",
+                ["H"] = "preview_scrolling_left",
+                ["L"] = "preview_scrolling_right",
+            },
+        },
+    },
+}
 
 vim.cmd([[
   set hls ic
@@ -124,16 +137,12 @@ vim.cmd([[
   au FileType csv setlocal nowrap
   set mouse=a
   set mousescroll=ver:1,hor:1
-  let g:python3_host_prog = '/opt/homebrew/bin/python3'
+"  let g:python3_host_prog = '/opt/homebrew/bin/python3.11'
 
   nnoremap <leader>n :NvimTreeToggle<CR>
   nnoremap <silent>    ; <Cmd>BufferPrevious<CR>
   nnoremap <silent>    ' <Cmd>BufferNext<CR>
-  nnoremap <silent>    qf :lua vim.lsp.buf.code_action()<CR>
   nnoremap <leader>w <Cmd>TypstWatch<CR>
-  nnoremap <leader>p :TypstPreview<CR>
-  nnoremap <leader>s :TypstPreviewStop<CR>
-  nnoremap <leader>t :TagbarToggle<CR>
   nnoremap <leader>/ :nohl<CR>
   nnoremap <leader>x :bd<CR>
   nnoremap <M-x> :bd!<CR>
@@ -260,4 +269,5 @@ vim.cmd([[
   hi @variable guifg=NONE
   hi AerialLine guifg=#c7eca1 gui=bold
   hi link @constant.builtin.c Macro
+  hi PMenuSel guifg=#eecdef guibg=#4a314a guisp=#4a314a gui=bold ctermfg=202 ctermbg=252 cterm=bold
 ]])

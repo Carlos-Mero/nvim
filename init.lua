@@ -1,3 +1,8 @@
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+vim.lsp.set_log_level("off")
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -82,19 +87,18 @@ require("lazy").setup({
     'hrsh7th/cmp-nvim-lua',
 --    'kdheepak/cmp-latex-symbols',
     {'kaarmu/typst.vim', ft='typst'},
+    {'habamax/vim-godot', ft='gdscript, gsl'},
 --    {
 --        'chomosuke/typst-preview.nvim',
 --        ft = 'typst',
 --        build = function() require 'typst-preview'.update() end,
 --    },
---    {'williamboman/mason.nvim', config=function() require("mason").setup() end},
+    {'williamboman/mason.nvim', config=function() require("mason").setup() end},
 --    {'williamboman/mason-lspconfig.nvim',
 --      config = function()require("mason-lspconfig").setup() end},
     'mfussenegger/nvim-dap',
     'neovim/nvim-lspconfig',
     {'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
---    'nvim-treesitter/nvim-treesitter-context',
---    'nvim-treesitter/nvim-treesitter-textobjects',
     {
         'stevearc/aerial.nvim',
         on_attach = function(bufnr)
@@ -108,11 +112,11 @@ require("lazy").setup({
         },
         dependencies = {
             "nvim-treesitter/nvim-treesitter",
---            "nvim-tree/nvim-web-devicons"
+            "nvim-tree/nvim-web-devicons"
         },
     }
 })
 
-require('config')
 require('lsp')
 require('dapconfig')
+require('config')
