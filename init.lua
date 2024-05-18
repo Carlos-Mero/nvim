@@ -85,14 +85,8 @@ require("lazy").setup({
     'saadparwaiz1/cmp_luasnip',
     'L3MON4D3/LuaSnip',
     'hrsh7th/cmp-nvim-lua',
---    'kdheepak/cmp-latex-symbols',
     {'kaarmu/typst.vim', ft='typst'},
     {'habamax/vim-godot', ft='gdscript, gsl'},
---    {
---        'chomosuke/typst-preview.nvim',
---        ft = 'typst',
---        build = function() require 'typst-preview'.update() end,
---    },
     {'williamboman/mason.nvim', config=function() require("mason").setup() end},
 --    {'williamboman/mason-lspconfig.nvim',
 --      config = function()require("mason-lspconfig").setup() end},
@@ -120,3 +114,7 @@ require("lazy").setup({
 require('lsp')
 require('dapconfig')
 require('config')
+
+if vim.g.neovide then
+    require('neovide')
+end

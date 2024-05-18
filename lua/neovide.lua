@@ -6,7 +6,6 @@ vim.g.neovide_padding_right = 0
 vim.g.neovide_padding_left = 0
 vim.g.neovide_floating_shadow = true
 vim.g.neovide_show_border = true
-vim.g.neovide_input_macos_alt_is_meta = true
 vim.g.neovide_input_ime = true
 
 vim.keymap.set('n', '<D-s>', ':w<CR>') -- Save

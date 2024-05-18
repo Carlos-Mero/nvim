@@ -1,3 +1,6 @@
+vim.opt.display = "lastline"
+vim.opt.smoothscroll = true
+
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', 'tf', builtin.find_files, {})
 vim.keymap.set('n', 'tg', builtin.live_grep, {})
@@ -9,7 +12,7 @@ vim.keymap.set('n', 'k', 'gk')
 vim.keymap.set('v', 'k', 'gk')
 vim.keymap.set('n', 'z', '<cmd>bd|bp<CR>')
 vim.keymap.set('n', 'q', '<cmd>q<CR>', {noremap = true, silent = true})
-vim.keymap.set({'i', 'c', 't'}, 'vv', '<ESC>', {noremap = true, silent = true})
+vim.keymap.set({'i', 'c', 't', 'v'}, 'vd', '<ESC>', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', {buffer = bufnr})
 
 require'nvim-treesitter.configs'.setup {
