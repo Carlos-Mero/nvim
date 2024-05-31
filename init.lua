@@ -108,6 +108,23 @@ require("lazy").setup({
             "nvim-treesitter/nvim-treesitter",
             "nvim-tree/nvim-web-devicons"
         },
+    },
+    {
+        'Julian/lean.nvim',
+        event = { 'BufReadPre *.lean', 'BufNewFile *.lean' },
+
+        dependencies = {
+            'neovim/nvim-lspconfig',
+            'nvim-lua/plenary.nvim',
+        },
+
+        -- see details below for full configuration options
+        opts = {
+            lsp = {
+                on_attach = on_attach,
+            },
+            mappings = true,
+        }
     }
 })
 

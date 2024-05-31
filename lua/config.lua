@@ -12,7 +12,8 @@ vim.keymap.set('n', 'k', 'gk')
 vim.keymap.set('v', 'k', 'gk')
 vim.keymap.set('n', 'z', '<cmd>bd|bp<CR>')
 vim.keymap.set('n', 'q', '<cmd>q<CR>', {noremap = true, silent = true})
-vim.keymap.set({'i', 'c', 't', 'v'}, 'vd', '<ESC>', {noremap = true, silent = true})
+-- vim.keymap.set({'i', 'c', 't', 'v', 'n'}, 'vd', '<ESC>', {noremap = true, silent = true})
+-- vim.keymap.set({'i', 'c', 't'}, 'vf', '<ESC>', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', {buffer = bufnr})
 
 require'nvim-treesitter.configs'.setup {
