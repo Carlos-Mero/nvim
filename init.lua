@@ -1,6 +1,7 @@
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.opt.termguicolors = true
+vim.g.have_nerd_font = true
+
 vim.lsp.set_log_level("off")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -87,7 +88,7 @@ require("lazy").setup({
     'hrsh7th/cmp-nvim-lua',
     {'kaarmu/typst.vim', ft='typst'},
     {'habamax/vim-godot', ft='gdscript, gsl'},
-    {'williamboman/mason.nvim', config=function() require("mason").setup() end},
+    -- {'williamboman/mason.nvim', config=function() require("mason").setup() end},
 --    {'williamboman/mason-lspconfig.nvim',
 --      config = function()require("mason-lspconfig").setup() end},
     'mfussenegger/nvim-dap',
