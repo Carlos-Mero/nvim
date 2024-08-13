@@ -1,6 +1,7 @@
 vim.o.encoding = "utf-8"
 vim.o.termguicolors = true
 vim.o.number = true
+vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.breakindent = true
 vim.o.mouse = 'a'
@@ -33,12 +34,13 @@ vim.keymap.set('n', 'th', builtin.help_tags, {})
 vim.keymap.set('n', 'z', '<cmd>bd|bp<CR>')
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', {buffer = bufnr})
 
-local kopts = {noremap = true, silent = true}
+local kopts = { noremap = true, silent = true }
 vim.keymap.set('n', 'q', '<cmd>q<CR>', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>n', '<Cmd>NvimTreeToggle<CR>', kopts)
 vim.keymap.set('n', ';', '<Cmd>BufferPrevious<CR>', kopts)
 vim.keymap.set('n', "'", '<Cmd>BufferNext<CR>', kopts)
 vim.keymap.set('n', '<leader>w', '<Cmd>TypstWatch<CR>', kopts)
+vim.keymap.set('n', '<leader>m', '<Cmd>RenderMarkdown toggle<CR>', kopts)
 vim.keymap.set('n', '<leader>/', '<Cmd>nohl<CR>', kopts)
 vim.keymap.set('n', '<leader>x', '<Cmd>bd<CR>', kopts)
 vim.keymap.set('n', '<M-x>', '<Cmd>bd!<CR>', kopts)
@@ -180,6 +182,9 @@ require('telescope').setup{
         },
     },
 }
+require('render-markdown').setup({
+	heading = {enabled = false},
+})
 
 
 vim.cmd.colorscheme 'tokyonight'
@@ -197,7 +202,7 @@ set_highlight('Function', { fg = '#bdd0f1', bold = true })
 set_highlight('Structure', { bold = true })
 set_highlight('Class', { bold = true })
 set_highlight('Title', { fg = '#bdd0f1', bold = true })
-set_highlight('PMenuSel', { bold = true })
+set_highlight('PMenuSel', { fg = '#eecdef', bold = true })
 set_highlight('NormalNC', { bg = 'None' })
 set_highlight('Type', { fg = '#e2bdee' })
 set_highlight('LspInlayHint', { bg = 'None' })
@@ -224,7 +229,7 @@ set_highlight('PreProc', { fg = '#90dc93' })
 set_highlight('texMathDelimZoneTI', { fg = '#919191' })
 set_highlight('texMathDelimZoneTD', { fg = '#919191' })
 set_highlight('LineNr', { fg = '#8e7faa' })
-set_highlight('cursorlinenr', { fg = '#f0f0f0', bg = '#eea8e2' })
+set_highlight('cursorlinenr', { fg = '#eecdef', bg = 'NONE', bold = true })
 set_highlight('Visual', { fg = '#ffffff', bg = '#eea8e2', sp = '#eea8e2' })
 set_highlight('Macro', { fg = '#ea735c' })
 set_highlight('Comment', { italic = true, fg = '#939fc9' })
@@ -245,6 +250,8 @@ set_highlight('@markup.raw.typst', { fg = 'NONE' })
 set_highlight('@markup.raw.block.typst', { fg = 'NONE' })
 set_highlight('@variable', { fg = 'NONE' })
 set_highlight('AerialLine', { fg = '#c7eca1', bold = true })
+set_highlight('@lsp.type.variable', {fg = '#c7eca1', italic = true, bold = true})
+set_highlight('DiagnosticUnnecessary', {fg = '#939fc9', italic = true})
 
 vim.api.nvim_set_hl(0, '@lsp.type.property', { link = 'Property' })
 vim.api.nvim_set_hl(0, '@lsp.typemod.unknown.dependentName.cpp', { link = 'Property' })
