@@ -14,33 +14,17 @@ lspconfig.clangd.setup {
 lspconfig.rust_analyzer.setup {
   capabilities = capabilities,
 }
-lspconfig.ruff_lsp.setup {
-  capabilities = capabilities,
-}
-lspconfig.pyright.setup {
-    capabilities = capabilities,
-    settings = {
-        pyright = {
-            disableOrganizeImports = true, -- Using Ruff
-        },
-        python = {
-            analysis = {
-                ignore = { '*' }, -- Using Ruff
-                typeCheckingMode = 'off', -- Using mypy
-            },
-        },
-    },
-}
---lspconfig.pylsp.setup {
---  capabilities = capabilities,
---}
-lspconfig.tinymist.setup {
-  capabilities = capabilities,
-  single_file_support = true,
-  root_dir = function()
-    return vim.fn.getcwd()
-  end,
-}
+lspconfig.ruff.setup {}
+-- lspconfig.pyright.setup {
+-- 	capabilities = capabilities,
+-- }
+-- lspconfig.tinymist.setup {
+--   capabilities = capabilities,
+--   root_dir = function() return vim.fn.getcwd() end,
+--   settings = {
+--     rootPath = "-"
+--   }
+-- }
 lspconfig.gdscript.setup {
   capabilities = capabilities,
 }
@@ -114,7 +98,10 @@ cmp.setup {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'buffer' },
-    { name = 'path' }
+    { name = 'path' },
+    per_filetype = {
+      codecompanion = {'codecompanion'}
+    }
   },
   formatting = {
     format = function(entry, vim_item)

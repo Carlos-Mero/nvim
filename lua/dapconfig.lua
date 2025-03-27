@@ -42,7 +42,7 @@ dap.adapters.python = function(cb, config)
     else
         cb({
             type = 'executable',
-            command = '/opt/homebrew/bin/python3',
+            command = '/Users/huangyanxing/pyenvs/main/bin/python',
             args = { '-m', 'debugpy.adapter' },
             options = {
                 source_filetype = 'python',
@@ -59,7 +59,7 @@ dap.configurations.python = {
 
         program = "${file}";
         pythonPath = function()
-            return '/opt/homebrew/Caskroom/miniconda/base/bin/python3'
+            return '/Users/huangyanxing/pyenvs/main/bin/python'
         end;
     },
 }

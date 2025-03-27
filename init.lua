@@ -26,56 +26,10 @@ require("lazy").setup({
 --    },
     {'folke/tokyonight.nvim', lazy=false, priority=1000,
     config = function() vim.cmd([[colorscheme tokyonight-moon]]) end,},
-    --'sainnhe/everforest'
-    {
-        'nvim-lualine/lualine.nvim',
-        config = function()
-            local lualine_require = require("lualine_require")
-            lualine_require.require('lualine').setup({
-                options = {
-                    icons_enabled = true,
-                    theme = 'auto',
-                    component_separators = { left = '', right = ''},
-                    section_separators = { left = '', right = ''},
-                    disabled_filetypes = {
-                        statusline = {},
-                        winbar = {},
-                    },
-                    ignore_focus = {},
-                    always_divide_middle = true,
-                    globalstatus = false,
-                    refresh = {
-                        statusline = 1000,
-                        tabline = 1000,
-                        winbar = 1000,
-                    }
-                },
-                sections = {
-                    lualine_a = {'mode'},
-                    lualine_b = {'branch', 'diff', 'diagnostics'},
-                    lualine_c = {'filename', 'aerial'},
-                    lualine_x = {'encoding', 'filetype', 'selectioncount'},
-                    lualine_y = {'progress', 'filesize'},
-                    lualine_z = {'location'}
-                },
-                inactive_sections = {
-                    lualine_a = {},
-                    lualine_b = {},
-                    lualine_c = {'filename'},
-                    lualine_x = {'location'},
-                    lualine_y = {},
-                    lualine_z = {}
-                },
-                tabline = {},
-                winbar = {},
-                inactive_winbar = {},
-                extensions = {}
-            })
-        end
-    },
+    'nvim-lualine/lualine.nvim',
     'nvim-tree/nvim-tree.lua',
     'nvim-tree/nvim-web-devicons',
-    'romgrk/barbar.nvim',
+    -- 'romgrk/barbar.nvim',
     'nvim-lua/plenary.nvim',
     'nvim-telescope/telescope.nvim',
     'hrsh7th/nvim-cmp',
@@ -86,13 +40,14 @@ require("lazy").setup({
     'saadparwaiz1/cmp_luasnip',
     'L3MON4D3/LuaSnip',
     'hrsh7th/cmp-nvim-lua',
-    {'kaarmu/typst.vim', ft='typst'},
+    -- {'kaarmu/typst.vim', ft='typst'},
     {'habamax/vim-godot', ft='gdscript, gsl'},
     -- {'williamboman/mason.nvim', config=function() require("mason").setup() end},
 --    {'williamboman/mason-lspconfig.nvim',
 --      config = function()require("mason-lspconfig").setup() end},
     'mfussenegger/nvim-dap',
     'neovim/nvim-lspconfig',
+    'lewis6991/gitsigns.nvim',
     {'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
     {
         'stevearc/aerial.nvim',
@@ -118,8 +73,6 @@ require("lazy").setup({
             'neovim/nvim-lspconfig',
             'nvim-lua/plenary.nvim',
         },
-
-        -- see details below for full configuration options
         opts = {
             lsp = {
                 on_attach = on_attach,
@@ -128,13 +81,60 @@ require("lazy").setup({
         }
     },
 	{
-    'MeanderingProgrammer/markdown.nvim',
-    main = "render-markdown",
-    opts = {},
-	name = 'render-markdown',
-    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' },
-	ft = "markdown",
-	}
+		"mikavilpas/yazi.nvim",
+		event = "VeryLazy",
+		keys = {
+			{
+				"ya",
+				"<cmd>Yazi<cr>",
+				desc = "Open yazi at the current file",
+			},
+			{
+				"ycw",
+        "<cmd>Yazi cwd<cr>",
+        desc = "Open the file manager in nvim's working directory" ,
+      },
+      {
+        '<c-up>',
+        "<cmd>Yazi toggle<cr>",
+        desc = "Resume the last yazi session",
+      },
+    },
+    ---@type YaziConfig
+    opts = {
+      -- if you want to open yazi instead of netrw, see below for more info
+      open_for_directories = false,
+    },
+  },
+  {
+    "olimorris/codecompanion.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+    },
+  },
+  {
+    "hat0uma/csvview.nvim",
+    ---@module "csvview"
+    ---@type CsvView.Options
+    opts = {
+      parser = { comments = { "#", "//" } },
+      keymaps = {
+        -- Text objects for selecting fields
+        textobject_field_inner = { "if", mode = { "o", "x" } },
+        textobject_field_outer = { "af", mode = { "o", "x" } },
+        -- Excel-like navigation:
+        -- Use <Tab> and <S-Tab> to move horizontally between fields.
+        -- Use <Enter> and <S-Enter> to move vertically between rows and place the cursor at the end of the field.
+        -- Note: In terminals, you may need to enable CSI-u mode to use <S-Tab> and <S-Enter>.
+        jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
+        jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
+        jump_next_row = { "<Enter>", mode = { "n", "v" } },
+        jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
+      },
+    },
+    cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
+  },
 })
 
 require('lsp')

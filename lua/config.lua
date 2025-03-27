@@ -1,6 +1,39 @@
+local function open_currpdf()
+	local file = vim.fn.expand("%:p:r") .. ".pdf"
+	vim.fn.system("open " .. file)
+	vim.notify("Opened file " .. file, vim.log.levels.INFO)
+end
+
+local function compile_typst()
+	local file = vim.fn.expand('%:p:r')
+	local filepdf = file .. ".pdf"
+	local cmd = "typst c " .. file .. ".typ"
+	local result = vim.fn.system(cmd)
+	if vim.v.shell_error ~= 0 then
+		vim.notify("Typst compilation failed:\n" .. result, vim.log.levels.ERROR)
+	else
+		vim.notify("Typst compiled successfully to: " .. filepdf, vim.log.levels.INFO)
+		vim.fn.system("open " .. filepdf)
+	end
+end
+
+local function compile_latex()
+	local file = vim.fn.expand('%:p:r')
+	local filepdf = file .. ".pdf"
+	local cmd = "xelatex " .. file .. ".tex"
+	local result = vim.fn.system(cmd)
+	if vim.v.shell_error ~= 0 then
+		vim.notify("XeLaTeX compilation failed:\n" .. result, vim.log.levels.ERROR)
+	else
+		vim.notify("XeLaTeX compiled successfully to: " .. filepdf, vim.log.levels.INFO)
+		vim.fn.system("open " .. filepdf)
+	end
+end
+
 vim.o.encoding = "utf-8"
 vim.o.termguicolors = true
 vim.o.number = true
+-- vim.o.relativenumber = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
 vim.o.breakindent = true
@@ -8,7 +41,7 @@ vim.o.mouse = 'a'
 vim.o.clipboard = 'unnamedplus'
 vim.o.updatetime = 241
 vim.o.timeoutlen = 241
-vim.o.signcolumn = 'no'
+-- vim.o.signcolumn = 'no'
 vim.o.splitright = true
 vim.o.splitbelow = true
 vim.o.list = true
@@ -19,8 +52,10 @@ vim.o.hlsearch = true
 vim.o.foldenable = false
 vim.o.showmode = false
 vim.o.laststatus = 2
-vim.o.tabstop = 4
-vim.o.shiftwidth = 4
+vim.o.tabstop = 2
+vim.o.expandtab = true
+vim.o.shiftwidth = 2
+vim.o.softtabstop = 2
 vim.o.display = 'lastline'
 vim.o.pumheight = 13
 vim.o.smoothscroll = true
@@ -31,15 +66,18 @@ vim.keymap.set('n', 'tf', builtin.find_files, {})
 vim.keymap.set('n', 'tg', builtin.live_grep, {})
 vim.keymap.set('n', 'tb', builtin.buffers, {})
 vim.keymap.set('n', 'th', builtin.help_tags, {})
-vim.keymap.set('n', 'z', '<cmd>bd|bp<CR>')
+vim.keymap.set('n', 'z', '<cmd>bd<CR>')
 vim.keymap.set('n', '<leader>a', '<cmd>AerialToggle<CR>', {buffer = bufnr})
 
 local kopts = { noremap = true, silent = true }
 vim.keymap.set('n', 'q', '<cmd>q<CR>', {noremap = true, silent = true})
 vim.keymap.set('n', '<leader>n', '<Cmd>NvimTreeToggle<CR>', kopts)
-vim.keymap.set('n', ';', '<Cmd>BufferPrevious<CR>', kopts)
-vim.keymap.set('n', "'", '<Cmd>BufferNext<CR>', kopts)
-vim.keymap.set('n', '<leader>w', '<Cmd>TypstWatch<CR>', kopts)
+vim.keymap.set('n', ';', '<Cmd>bp<CR>', kopts)
+vim.keymap.set('n', "'", '<Cmd>bn<CR>', kopts)
+vim.keymap.set('n', '<leader>o', open_currpdf, kopts)
+vim.keymap.set('n', '<leader>w', compile_typst, kopts)
+vim.keymap.set('n', '<leader>c', compile_latex, kopts)
+vim.keymap.set('n', '<leader>p', '<Cmd>TypstPreviewToggle<CR>', kopts)
 vim.keymap.set('n', '<leader>m', '<Cmd>RenderMarkdown toggle<CR>', kopts)
 vim.keymap.set('n', '<leader>/', '<Cmd>nohl<CR>', kopts)
 vim.keymap.set('n', '<leader>x', '<Cmd>bd<CR>', kopts)
@@ -80,10 +118,14 @@ vim.keymap.set('i', '<M-Down>', '<C-O>G', opts)
 
 vim.keymap.set('t', '<C-x>', '<C-\\><C-N>', opts)
 vim.keymap.set('t', '<ESC>', '<C-\\><C-N>', opts)
+--vim.api.nvim_set_keymap({ "n", "v" }, "<C-a>", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
+--vim.api.nvim_set_keymap({ "n", "v" }, "<leader>c", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
+vim.cmd([[cab cc CodeCompanionChat Toggle]])
 
+require'gitsigns'.setup()
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {
-      "c", "cpp", "json", "json5", "markdown", "markdown_inline", "toml", "csv",
+      "c", "cpp", "json", "json5", "markdown", "markdown_inline", "toml",
       "lua", "vim", "vimdoc", "query", "python", "yaml", "xml", "latex", "html",
       "css", "javascript", "typescript", "swift", "rust", "bibtex", "bash", "fish",
       "make", "godot_resource", "ssh_config", "typst"},
@@ -96,7 +138,7 @@ require'nvim-treesitter.configs'.setup {
     disable = function(lang, buf)
         local max_filesize = 16777216 -- 16MB
         local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-        if ok and stats and stats.size > max_filesize then
+        if (ok and stats and stats.size > max_filesize) or lang == "csv" then
             return true
         end
     end,
@@ -182,77 +224,150 @@ require('telescope').setup{
         },
     },
 }
-require('render-markdown').setup({
-	heading = {enabled = false},
-})
+-- require('render-markdown').setup({
+-- 	heading = {enabled = false},
+-- })
 
+require('lualine').setup {
+  options = {
+    icons_enabled = true,
+    theme = 'tokyonight',
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {
+      statusline = {},
+      winbar = {},
+    },
+    ignore_focus = {},
+    always_divide_middle = true,
+    globalstatus = false,
+    refresh = {
+      statusline = 100,
+      tabline = 100,
+      winbar = 100,
+    }
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff'},
+    lualine_c = {'filename', 'aerial'},
+    lualine_x = {'encoding', 'filetype'},
+    lualine_y = {'progress', 'filesize'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {
+    lualine_a = {'buffers'},
+    lualine_b = {},
+    lualine_c = {},
+    lualine_x = {},
+    lualine_y = {'searchcount', 'selectioncount', 'diagnostics'},
+    lualine_z = {'branch'}
+  },
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {}
+}
+
+require("codecompanion").setup({
+  adapters = {
+    qwen = function()
+      return require("codecompanion.adapters").extend("ollama", {
+        name = "qwen", -- Give this adapter a different name to differentiate it from the default ollama adapter
+        schema = {
+          model = {
+            default = "qwen2.5:7b-instruct",
+          },
+          num_ctx = {
+            default = 16384,
+          },
+          num_predict = {
+            default = -1,
+          },
+        },
+      })
+    end,
+  },
+  strategies = {
+    chat = {
+      adapter = 'qwen',
+    },
+    inline = {
+      adapter = 'qwen',
+    },
+  },
+})
 
 vim.cmd.colorscheme 'tokyonight'
 
-local function set_highlight(group, opts)
-  vim.api.nvim_set_hl(0, group, opts)
-end
+vim.api.nvim_set_hl(0, 'dbknum', { fg = '#f9f9f9', bg = '#ec6645', bold = true })
+vim.api.nvim_set_hl(0, 'dbkline', { bg = '#2e2431' })
+vim.api.nvim_set_hl(0, 'dstnum', { fg = '#ffffff', bg = '#aebbe7', bold = true })
+vim.api.nvim_set_hl(0, 'dstline', { bg = '#105021' })
+vim.api.nvim_set_hl(0, 'Normal', { fg = '#ffffff', bg = 'None' })
+vim.api.nvim_set_hl(0, 'Function', { fg = '#bdd0f1', bold = true })
+vim.api.nvim_set_hl(0, 'Structure', { bold = true })
+vim.api.nvim_set_hl(0, 'Class', { bold = true })
+vim.api.nvim_set_hl(0, 'Title', { fg = '#bdd0f1', bold = true })
+vim.api.nvim_set_hl(0, 'PMenuSel', { fg = '#eecdef', bold = true })
+vim.api.nvim_set_hl(0, 'NormalNC', { bg = 'None' })
+vim.api.nvim_set_hl(0, 'Type', { fg = '#e2bdee' })
+vim.api.nvim_set_hl(0, 'LspInlayHint', { bg = 'None' })
+vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'None' })
+vim.api.nvim_set_hl(0, 'Operator', { fg = '#80a1d9' })
+vim.api.nvim_set_hl(0, 'Property', { fg = '#c7eca1' })
+vim.api.nvim_set_hl(0, '@property', { fg = '#c7eca1' })
+vim.api.nvim_set_hl(0, '@type.builtin', { fg = '#e2bdee' })
+vim.api.nvim_set_hl(0, 'Statement', { fg = '#ffffff', bold = true })
+vim.api.nvim_set_hl(0, '@conditional', { fg = '#ffffff', bold = true })
+vim.api.nvim_set_hl(0, '@nospell', { fg = '#c7eca1' })
+vim.api.nvim_set_hl(0, '@none', { fg = '#bdd0f1' })
+vim.api.nvim_set_hl(0, 'Todo', { fg = '#ffffff', bg = '#f18342', bold = true })
+vim.api.nvim_set_hl(0, '@lsp.typemod.text.math.typst', { bold = true })
+vim.api.nvim_set_hl(0, '@lsp.typemod.pol.math.typst', { fg = '#eecdef', bold = true })
+vim.api.nvim_set_hl(0, '@lsp.type.function.typst', { fg = '#c7eca1', bold = true })
+vim.api.nvim_set_hl(0, '@lsp.type.link.typst', { fg = '#eea8e2' })
+vim.api.nvim_set_hl(0, '@lsp.type.label.typst', { fg = '#bdd0f1' })
+vim.api.nvim_set_hl(0, '@lsp.type.heading.typst', { fg = '#eff3ff', bold = true })
+vim.api.nvim_set_hl(0, '@keyword', { fg = '#bdd0f1', bold = false, italic = false })
+vim.api.nvim_set_hl(0, '@field', { fg = '#c7eca1' })
+vim.api.nvim_set_hl(0, 'Special', { fg = '#bdd0f1' })
+vim.api.nvim_set_hl(0, 'PreProc', { fg = '#90dc93' })
+vim.api.nvim_set_hl(0, 'texMathDelimZoneTI', { fg = '#919191' })
+vim.api.nvim_set_hl(0, 'texMathDelimZoneTD', { fg = '#919191' })
+vim.api.nvim_set_hl(0, 'LineNr', { fg = '#8e7faa' })
+vim.api.nvim_set_hl(0, 'cursorlinenr', { fg = '#eecdef', bg = 'NONE', bold = true })
+vim.api.nvim_set_hl(0, 'Visual', { fg = '#ffffff', bg = '#eea8e2', sp = '#eea8e2' })
+vim.api.nvim_set_hl(0, 'Macro', { fg = '#ea735c' })
+vim.api.nvim_set_hl(0, 'Comment', { italic = true, fg = '#939fc9' })
+vim.api.nvim_set_hl(0, 'Structure', { bold = true })
+vim.api.nvim_set_hl(0, 'Repeat', { bold = true })
+vim.api.nvim_set_hl(0, 'Directory', { bold = true })
+vim.api.nvim_set_hl(0, 'MatchParen', { fg = '#fdfdfd', bg = '#eea8e2' })
+vim.api.nvim_set_hl(0, 'mkdBlockquote', { fg = '#aaaaaa', italic = true })
+vim.api.nvim_set_hl(0, '@punctuation.special', { fg = '#e2bdee' })
+vim.api.nvim_set_hl(0, '@namespace.cpp', { fg = '#90dc93', bold = true })
+vim.api.nvim_set_hl(0, '@string.csv', { fg = '#eecdef', bold = true })
+vim.api.nvim_set_hl(0, '@constant.typst', { fg = '#eecdef', bold = true })
+vim.api.nvim_set_hl(0, '@markup.math.typst', { fg = '#bdd0f1', bold = true })
+vim.api.nvim_set_hl(0, '@markup.raw.typst', { fg = 'NONE' })
+vim.api.nvim_set_hl(0, '@markup.raw.block.typst', { fg = 'NONE' })
+vim.api.nvim_set_hl(0, '@variable', { fg = 'NONE' })
+vim.api.nvim_set_hl(0, 'AerialLine', { fg = '#c7eca1', bold = true })
+vim.api.nvim_set_hl(0, '@lsp.type.variable', {fg = '#c7eca1', italic = true, bold = true})
+vim.api.nvim_set_hl(0, '@lsp.type.function.typst', { fg = '#eecdef', bold = true })
+vim.api.nvim_set_hl(0, 'DiagnosticUnnecessary', {fg = '#939fc9', italic = true})
+vim.api.nvim_set_hl(0, '@nospell.latex', {fg = "NONE", bg = "NONE"})
+-- vim.api.nvim_set_hl(0, '@spell.latex', { link = "String" })
 
-set_highlight('dbknum', { fg = '#f9f9f9', bg = '#ec6645', bold = true })
-set_highlight('dbkline', { bg = '#2e2431' })
-set_highlight('dstnum', { fg = '#ffffff', bg = '#aebbe7', bold = true })
-set_highlight('dstline', { bg = '#105021' })
-set_highlight('Normal', { fg = '#ffffff', bg = 'None' })
-set_highlight('Function', { fg = '#bdd0f1', bold = true })
-set_highlight('Structure', { bold = true })
-set_highlight('Class', { bold = true })
-set_highlight('Title', { fg = '#bdd0f1', bold = true })
-set_highlight('PMenuSel', { fg = '#eecdef', bold = true })
-set_highlight('NormalNC', { bg = 'None' })
-set_highlight('Type', { fg = '#e2bdee' })
-set_highlight('LspInlayHint', { bg = 'None' })
-set_highlight('CursorLine', { bg = 'None' })
-set_highlight('Operator', { fg = '#80a1d9' })
-set_highlight('Property', { fg = '#c7eca1' })
-set_highlight('@property', { fg = '#c7eca1' })
-set_highlight('@type.builtin', { fg = '#e2bdee' })
-set_highlight('Statement', { fg = '#ffffff', bold = true })
-set_highlight('@conditional', { fg = '#ffffff', bold = true })
-set_highlight('@nospell', { fg = '#c7eca1' })
-set_highlight('@none', { fg = '#bdd0f1' })
-set_highlight('Todo', { fg = '#ffffff', bg = '#f18342', bold = true })
-set_highlight('@lsp.typemod.text.math.typst', { bold = true })
-set_highlight('@lsp.typemod.pol.math.typst', { fg = '#eecdef', bold = true })
-set_highlight('@lsp.type.function.typst', { fg = '#c7eca1', bold = true })
-set_highlight('@lsp.type.link.typst', { fg = '#eea8e2' })
-set_highlight('@lsp.type.label.typst', { fg = '#bdd0f1' })
-set_highlight('@lsp.type.heading.typst', { fg = '#eff3ff', bold = true })
-set_highlight('@keyword', { fg = '#bdd0f1', bold = false, italic = false })
-set_highlight('@field', { fg = '#c7eca1' })
-set_highlight('Special', { fg = '#bdd0f1' })
-set_highlight('PreProc', { fg = '#90dc93' })
-set_highlight('texMathDelimZoneTI', { fg = '#919191' })
-set_highlight('texMathDelimZoneTD', { fg = '#919191' })
-set_highlight('LineNr', { fg = '#8e7faa' })
-set_highlight('cursorlinenr', { fg = '#eecdef', bg = 'NONE', bold = true })
-set_highlight('Visual', { fg = '#ffffff', bg = '#eea8e2', sp = '#eea8e2' })
-set_highlight('Macro', { fg = '#ea735c' })
-set_highlight('Comment', { italic = true, fg = '#939fc9' })
-set_highlight('Structure', { bold = true })
-set_highlight('Repeat', { bold = true })
-set_highlight('Directory', { bold = true })
-set_highlight('BufferCurrentSign', { fg = '#82aaff', bg = '#102140' })
-set_highlight('BufferCurrentMod', { fg = '#82aaff', bg = '#102140' })
-set_highlight('BufferLineIndicatorSelected', { bg = '#eea8e2' })
-set_highlight('MatchParen', { fg = '#fdfdfd', bg = '#eea8e2' })
-set_highlight('mkdBlockquote', { fg = '#aaaaaa', italic = true })
-set_highlight('@punctuation.special', { fg = '#e2bdee' })
-set_highlight('@namespace.cpp', { fg = '#90dc93', bold = true })
-set_highlight('@string.csv', { fg = '#eecdef', bold = true })
-set_highlight('@constant.typst', { fg = '#eecdef', bold = true })
-set_highlight('@markup.math.typst', { fg = '#bdd0f1', bold = true })
-set_highlight('@markup.raw.typst', { fg = 'NONE' })
-set_highlight('@markup.raw.block.typst', { fg = 'NONE' })
-set_highlight('@variable', { fg = 'NONE' })
-set_highlight('AerialLine', { fg = '#c7eca1', bold = true })
-set_highlight('@lsp.type.variable', {fg = '#c7eca1', italic = true, bold = true})
-set_highlight('DiagnosticUnnecessary', {fg = '#939fc9', italic = true})
-
+vim.api.nvim_set_hl(0, '@property.json', {fg = '#dfa341', bold = true})
 vim.api.nvim_set_hl(0, '@lsp.type.property', { link = 'Property' })
 vim.api.nvim_set_hl(0, '@lsp.typemod.unknown.dependentName.cpp', { link = 'Property' })
 vim.api.nvim_set_hl(0, 'cConditional', { link = 'Repeat' })
@@ -268,3 +383,5 @@ vim.api.nvim_set_hl(0, '@constant.builtin.c', { link = 'Macro' })
 vim.api.nvim_set_hl(0, '@constant.builtin.cpp', { link = 'Macro' })
 vim.api.nvim_set_hl(0, '@keyword.conditional.cpp', { link = '@conditional' })
 vim.api.nvim_set_hl(0, '@keyword.conditional.c', { link = '@conditional' })
+vim.api.nvim_set_hl(0, '@none.html', { link = 'Normal' })
+vim.api.nvim_set_hl(0, '@tag.html', { link = '@none' })
