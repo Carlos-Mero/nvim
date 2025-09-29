@@ -18,13 +18,13 @@ lspconfig.ruff.setup {}
 -- lspconfig.pyright.setup {
 -- 	capabilities = capabilities,
 -- }
--- lspconfig.tinymist.setup {
---   capabilities = capabilities,
---   root_dir = function() return vim.fn.getcwd() end,
---   settings = {
---     rootPath = "-"
---   }
--- }
+lspconfig.tinymist.setup {
+  capabilities = capabilities,
+  root_dir = function() return vim.fn.getcwd() end,
+  settings = {
+    rootPath = "-"
+  }
+}
 lspconfig.gdscript.setup {
   capabilities = capabilities,
 }
