@@ -1,33 +1,24 @@
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-local lspconfig = require('lspconfig')
-
-lspconfig.sourcekit.setup {
+vim.lsp.config('sourcekit', {
   cmd = {'/usr/bin/sourcekit-lsp'},
   filetypes = { 'swift' },
-  root_dir = lspconfig.util.root_pattern('Package.swift', 'buildServer.json', 'compile_commands.json', '.git', '.vimrc'),
+  -- root_dir = vim.lsp.util.root_pattern('Package.swift', 'buildServer.json', 'compile_commands.json', '.git', '.vimrc'),
   capabilities = capabilities
-}
-lspconfig.clangd.setup {
-  capabilities = capabilities,
-}
-lspconfig.rust_analyzer.setup {
-  capabilities = capabilities,
-}
-lspconfig.ruff.setup {}
--- lspconfig.pyright.setup {
--- 	capabilities = capabilities,
--- }
-lspconfig.tinymist.setup {
+})
+vim.lsp.config('tinymist', {
   capabilities = capabilities,
   root_dir = function() return vim.fn.getcwd() end,
   settings = {
     rootPath = "-"
   }
-}
-lspconfig.gdscript.setup {
-  capabilities = capabilities,
-}
+})
+vim.lsp.enable('sourcekit')
+vim.lsp.enable('clangd')
+vim.lsp.enable('rust_analyzer')
+vim.lsp.enable('ruff')
+vim.lsp.enable('tinymist')
+vim.lsp.enable('gdscript')
 
 local luasnip = require 'luasnip'
 local cmp = require 'cmp'
