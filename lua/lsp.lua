@@ -8,10 +8,6 @@ vim.lsp.config('sourcekit', {
 })
 vim.lsp.config('tinymist', {
   capabilities = capabilities,
-  root_dir = function() return vim.fn.getcwd() end,
-  settings = {
-    rootPath = "-"
-  }
 })
 vim.lsp.enable('sourcekit')
 vim.lsp.enable('clangd')
