@@ -2,124 +2,86 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 vim.g.have_nerd_font = true
 
-vim.lsp.set_log_level("off")
+vim.lsp.log.set_level 'off'
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- latest stable release
-    lazypath,
-  })
+local gh = function(repo)
+  return "https://github.com/" .. repo
 end
-vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({
-  {
-    "iamcco/markdown-preview.nvim",
-    cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-    build = "cd app && yarn install",
-    init = function()
-      vim.g.mkdp_filetypes = { "markdown" }
-    end,
-    ft = { "markdown" },
-  },
-  -- {'folke/tokyonight.nvim', lazy=false, priority=1000,
-  --   config = function() vim.cmd([[colorscheme tokyonight-moon]]) end,},
-  -- {'neanias/everforest-nvim', lazy=false, priority=1000, config = function() require("everforest").setup({
-  --   background = "medium",
-  --   italics = true
-  -- }) end},
-  { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
-  'nvim-lualine/lualine.nvim',
-  'nvim-tree/nvim-tree.lua',
-    'nvim-tree/nvim-web-devicons',
-    -- 'romgrk/barbar.nvim',
-    'nvim-lua/plenary.nvim',
-    'nvim-telescope/telescope.nvim',
-    'hrsh7th/nvim-cmp',
-    'hrsh7th/cmp-nvim-lsp',
-    'hrsh7th/cmp-buffer',
-    'hrsh7th/cmp-path',
-    'hrsh7th/cmp-cmdline',
-    'saadparwaiz1/cmp_luasnip',
-    'L3MON4D3/LuaSnip',
-    'hrsh7th/cmp-nvim-lua',
-    -- {'kaarmu/typst.vim', ft='typst'},
-    {'habamax/vim-godot', ft='gdscript, gsl'},
-    -- {'williamboman/mason.nvim', config=function() require("mason").setup() end},
---    {'williamboman/mason-lspconfig.nvim',
---      config = function()require("mason-lspconfig").setup() end},
-    'mfussenegger/nvim-dap',
-    'neovim/nvim-lspconfig',
-    'lewis6991/gitsigns.nvim',
-    {'nvim-treesitter/nvim-treesitter', build = ':TSUpdate'},
-    {
-        'stevearc/aerial.nvim',
-        on_attach = function(bufnr)
-            -- Jump forwards/backwards with '{' and '}'
-            vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
-            vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
-        end,
-        opts = {
-            backends = {'treesitter'},
-            autojump = true
-        },
-        dependencies = {
-            "nvim-treesitter/nvim-treesitter",
-            "nvim-tree/nvim-web-devicons"
-        },
-    },
-    {
-        'Julian/lean.nvim',
-        event = { 'BufReadPre *.lean', 'BufNewFile *.lean' },
+vim.api.nvim_create_autocmd("PackChanged", {
+  callback = function(ev)
+    if ev.data.spec.name == "markdown-preview.nvim"
+        and (ev.data.kind == "install" or ev.data.kind == "update") then
+      vim.system({ "sh", "-c", "cd " .. ev.data.path .. "/app && yarn install" }):wait()
+    end
+  end,
+})
 
-        dependencies = {
-            'neovim/nvim-lspconfig',
-            'nvim-lua/plenary.nvim',
-        },
-        opts = {
-            lsp = {
-                on_attach = on_attach,
-            },
-            mappings = true,
-        }
-    },
-	{
-		"mikavilpas/yazi.nvim",
-		event = "VeryLazy",
-		keys = {
-			{
-				"ya",
-				"<cmd>Yazi<cr>",
-				desc = "Open yazi at the current file",
-			},
-			{
-				"ycw",
-        "<cmd>Yazi cwd<cr>",
-        desc = "Open the file manager in nvim's working directory" ,
+vim.pack.add({
+  { src = gh("iamcco/markdown-preview.nvim"), opt = true },
+  -- { src = gh("catppuccin/nvim") },
+  -- { src = gh("neanias/everforest-nvim"), name = "everforest" },
+  { src = gh("rebelot/kanagawa.nvim") },
+  { src = gh("nvim-lualine/lualine.nvim") },
+  { src = gh("nvim-tree/nvim-tree.lua") },
+  { src = gh("nvim-tree/nvim-web-devicons") },
+  { src = gh("nvim-lua/plenary.nvim") },
+  { src = gh("nvim-telescope/telescope.nvim") },
+  { src = gh("habamax/vim-godot"), opt = true },
+  { src = gh("mfussenegger/nvim-dap") },
+  { src = gh("neovim/nvim-lspconfig") },
+  { src = gh("lewis6991/gitsigns.nvim") },
+  { src = gh("stevearc/aerial.nvim") },
+  { src = gh("Julian/lean.nvim"), opt = true },
+  { src = gh("mikavilpas/yazi.nvim") },
+})
+
+require("lualine").setup()
+require("nvim-tree").setup()
+require("gitsigns").setup()
+require("aerial").setup({
+  on_attach = function(bufnr)
+    vim.keymap.set("n", "{", "<cmd>AerialPrev<CR>", { buffer = bufnr })
+    vim.keymap.set("n", "}", "<cmd>AerialNext<CR>", { buffer = bufnr })
+  end,
+})
+
+require("yazi").setup({
+  open_for_directories = false,
+})
+vim.keymap.set("n", "ya", "<cmd>Yazi<cr>", { desc = "Open yazi at the current file" })
+vim.keymap.set("n", "ycw", "<cmd>Yazi cwd<cr>", { desc = "Open yazi in nvim cwd" })
+vim.keymap.set("n", "<c-up>", "<cmd>Yazi toggle<cr>", { desc = "Resume yazi session" })
+
+vim.g.mkdp_filetypes = { "markdown" }
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.cmd.packadd("markdown-preview.nvim")
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "gdscript", "gsl" },
+  callback = function()
+    vim.cmd.packadd("vim-godot")
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"lean"},
+  callback = function()
+    vim.cmd.packadd("lean.nvim")
+    require("lean").setup({
+      lsp = {
+        on_attach = on_attach,
       },
-      {
-        '<c-up>',
-        "<cmd>Yazi toggle<cr>",
-        desc = "Resume the last yazi session",
-      },
-    },
-    ---@type YaziConfig
-    opts = {
-      -- if you want to open yazi instead of netrw, see below for more info
-      open_for_directories = false,
-    },
-  },
+      mappings = true,
+    })
+  end
 })
 
 require('lsp')
 require('dapconfig')
 require('config')
-
-if vim.g.neovide then
-    require('neovide')
-end

@@ -20,12 +20,12 @@ end
 local function compile_latex()
 	local file = vim.fn.expand('%:p:r')
 	local filepdf = file .. ".pdf"
-	local cmd = "xelatex " .. file .. ".tex"
+	local cmd = "pdflatex " .. file .. ".tex"
 	local result = vim.fn.system(cmd)
 	if vim.v.shell_error ~= 0 then
-		vim.notify("XeLaTeX compilation failed:\n" .. result, vim.log.levels.ERROR)
+		vim.notify("pdflatex compilation failed:\n" .. result, vim.log.levels.ERROR)
 	else
-		vim.notify("XeLaTeX compiled successfully to: " .. filepdf, vim.log.levels.INFO)
+		vim.notify("pdflatex compiled successfully to: " .. filepdf, vim.log.levels.INFO)
 		vim.fn.system("open " .. filepdf)
 	end
 end
@@ -121,40 +121,6 @@ vim.keymap.set('t', '<C-x>', '<C-\\><C-N>', opts)
 vim.keymap.set('t', '<ESC>', '<C-\\><C-N>', opts)
 
 require'gitsigns'.setup()
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = {
-      "c", "cpp", "json", "json5", "markdown", "markdown_inline", "toml",
-      "lua", "vim", "vimdoc", "query", "python", "yaml", "xml", "latex", "html",
-      "css", "javascript", "typescript", "swift", "rust", "bibtex", "bash", "fish",
-      "make", "godot_resource", "ssh_config", "typst"},
-  sync_install = true,
-  auto_install = true,
-  ignore_install = {},
-  modules = {},
-  highlight = {
-    enable = true,
-    disable = function(lang, buf)
-        local max_filesize = 16777216 -- 16MB
-        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-        if (ok and stats and stats.size > max_filesize) or lang == "csv" then
-            return true
-        end
-    end,
-    additional_vim_regex_highlighting = false,
-  },
-  incremental_selection = {
-    enable = true,
-    keymaps = {
-      init_selection = '<CR>',
-      node_incremental = '<CR>',
-      node_decremental = '<BS>',
-      scope_incremental = '<TAB>',
-    }
-  },
-  indent = {
-    enable = true
-  },
-}
 
 local term_mode = vim.api.nvim_create_augroup("TERM_MODE", {clear = true})
 vim.api.nvim_create_autocmd({"TermOpen"}, {
@@ -274,7 +240,6 @@ require('lualine').setup {
   extensions = {}
 }
 
-
 -- vim.api.nvim_set_hl(0, 'dbknum', { fg = '#f9f9f9', bg = '#ec6645', bold = true })
 -- vim.api.nvim_set_hl(0, 'dbkline', { bg = '#2e2431' })
 -- vim.api.nvim_set_hl(0, 'dstnum', { fg = '#ffffff', bg = '#aebbe7', bold = true })
@@ -349,7 +314,7 @@ require('lualine').setup {
 -- vim.api.nvim_set_hl(0, '@none.html', { link = 'Normal' })
 -- vim.api.nvim_set_hl(0, '@tag.html', { link = '@none' })
 
-vim.cmd.colorscheme 'catppuccin-mocha'
+vim.cmd.colorscheme "kanagawa"
 vim.api.nvim_set_hl(0, 'Normal', { fg = '#ffffff', bg = 'None' })
 vim.api.nvim_set_hl(0, 'CursorLine', { bg = 'None' })
 vim.api.nvim_set_hl(0, 'cursorlinenr', { fg = '#eecdef', bg = 'NONE', bold = true })
